@@ -40,11 +40,6 @@ spring:
           username: xw_manage_user
           password: C1ReKUkdzFBdnRsQ
           driver-class-name: com.mysql.jdbc.Driver
-        mysql2:
-          url: jdbc:mysql://192.168.1.48:3306/coocaa_rds?useUnicode=true&autoReconnect=true&characterEncoding=UTF8&zeroDateTimeBehavior=convertToNull&useSSL=false
-          username: bigdata_storage
-          password: kqYrEYGzZ8Zyxz
-          driver-class-name: com.mysql.jdbc.Driver
   cache:
     type: REDIS
   redis:
@@ -93,30 +88,8 @@ hystrix:
             # 熔断器超时时间，默认：1000/毫秒
             timeoutInMilliseconds: 15000
 
-
-
 miniProgram:
-  media:
-    url: http://beta.movie.tc.skysrt.com
   sse:
-    url: https://api.skyworthiot.com/
-    appkey: 4ad0662802464447a04c2e5f677fc99f
-    secret: 3fb0462828e34afcb2c4230c85302b2f
+    url: https://localhost:8003/sendToClient
   websocket:
-    port: 8004
-  skysrt:
-    url: http://172.20.155.93:6060
-  videoBusiness:
-    url: http://dev.business.video.tc.skysrt.com/
-  wx:
-    url: https://api.weixin.qq.com/
-  token:
-    shaoer:
-      appid: wx2afb5fa9277ca836
-      secret: 55ecd11c7088dcc8123cf998ce393c41
-    youzan:
-      appid: wxb72e609894654ee7
-      secret: e4dfd49bc3d64c2e3023b76fa0bf9030
-    jiaoyu:
-      appid: wx271e4024db03885d
-      secret: 95dd3f7f0d5d95b01a587f56d3bdf06e
+    port: 8005
