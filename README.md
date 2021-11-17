@@ -2,12 +2,17 @@
 
 ##背景
 
-此项目基于Netty、Websocket实现双端通信。如果是集群部署，需要Nginx基于url中的uid做一致性哈希解决集群问题。
+此项目基于Netty、Websocket实现双端通信。
+
+如果是集群部署，需要Nginx对WebSocket和HTTP请求中url中的uid做一致性哈希解决集群问题。
+
+
+![](http://edrawcloudpubliccn.oss-cn-shenzhen.aliyuncs.com/viewer/self/1444767/share/2021-11-17/1637150176/main.svg)
 
 ## 项目目录结构
 
-    api:为前端提供服务的接口
-    common:通用模块
+    api: 提供接口
+    common: 通用模块
     
 ## 接口
 
@@ -32,4 +37,11 @@
         "data":{"key":"value"},
         "event":"customize"
     }
+
+## todo
+
+1. 使用Netty搭建HTTPClient代替feign
+2. 使用Netty搭建HTTPServer代替Tomcat
+3. 使用自定义RPC代替服务器之间的HTTP通信 
+
 
