@@ -1,11 +1,9 @@
-package com.coocaa.websocket.api.netty.handle;
+package com.coocaa.websocket.api.websocket.handle;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coocaa.websocket.api.netty.MessageDto;
-import com.coocaa.websocket.api.netty.UserSseUtil;
-import com.coocaa.websocket.api.service.SseService;
-import com.coocaa.websocket.common.util.R;
-import com.coocaa.websocket.common.util.SpringContextUtil;
+import com.coocaa.websocket.api.httpclient.HttpClient;
+import com.coocaa.websocket.api.websocket.MessageDto;
+import com.coocaa.websocket.api.websocket.UserSseUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,9 +12,10 @@ import io.netty.handler.codec.http.websocketx.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
+import java.net.URISyntaxException;
 
 /**
- * 自定义的handler类
+ * 自定义的handler类，只适合sendToClient接口
  */
 @Slf4j
 @Configuration
@@ -27,7 +26,7 @@ public class WebSocketHandle extends SimpleChannelInboundHandler<Object> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws URISyntaxException, InterruptedException {
         if (msg instanceof WebSocketFrame) {
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }
@@ -65,15 +64,17 @@ public class WebSocketHandle extends SimpleChannelInboundHandler<Object> {
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        String res = R.fail(cause.getMessage()).toString();
-        log.info("WEBSOCKET ERROR :{}", res);
-        TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(Unpooled.buffer().writeBytes(res.getBytes()));
+        MessageDto messageDto = new MessageDto();
+        messageDto.setUid("server");
+        messageDto.setEvent("exception");
+        messageDto.setData(cause.getMessage());
+        log.error("WEBSOCKET ERROR :", cause);
+        TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(Unpooled.buffer().writeBytes(JSONObject.toJSONString(messageDto).getBytes()));
         ctx.channel().writeAndFlush(textWebSocketFrame);
         ctx.close();
     }
 
-    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
+    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) throws URISyntaxException, InterruptedException {
         if (frame instanceof PingWebSocketFrame) {
             //ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
             return;
@@ -87,10 +88,7 @@ public class WebSocketHandle extends SimpleChannelInboundHandler<Object> {
                 case "ping":
                     return;
                 default:
-                    SseService sseService = (SseService) SpringContextUtil.getBean("sseServiceImpl");
-                    MessageDto response = sseService.sendMessage(req);
-                    TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(Unpooled.buffer().writeBytes(JSONObject.toJSONBytes(response)));
-                    ctx.channel().writeAndFlush(textWebSocketFrame);
+                    HttpClient.postJson(req);
                     break;
             }
         }
@@ -101,4 +99,5 @@ public class WebSocketHandle extends SimpleChannelInboundHandler<Object> {
             channel.close();
         }
     }
+
 }

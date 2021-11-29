@@ -1,4 +1,4 @@
-package com.coocaa.websocket.api.netty;
+package com.coocaa.websocket.api.websocket;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;
@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 1. 用户上下线
  * 2. 给用户发送消息
+ *
  * @author liangshizhu
  */
 
@@ -49,19 +50,19 @@ public class UserSseUtil {
 
         channelMap.put(userId, channel);
         channelGroup.add(channel);
-        log.info("{}：上线",channel.attr(uid).get());
+        log.info("{}：上线", channel.attr(uid).get());
 
     }
 
     public static void offline(Channel channel) {
         Object a = channel.attr(uid).get();
-        if (null==a) {
+        if (null == a) {
             log.error("下线失败，uid为空");
             return;
         }
         channelMap.remove(a.toString());
         channelGroup.remove(channel);
-        log.info("{}：下线",channel.attr(uid).get());
+        log.info("{}：下线", channel.attr(uid).get());
 
     }
 
@@ -90,12 +91,14 @@ public class UserSseUtil {
      * 给指定用户发内容
      * 后续可以掉这个方法推送消息给客户端
      */
-    public static void sendMessage(MessageDto message) {
+    public static boolean sendMessage(MessageDto message) {
         Channel channel = channelMap.get(message.getTargetId());
         if (null == channel) {
-            throw new RuntimeException(message.getTargetId() + "该用户连接不存在");
+            log.error(message.getTargetId() + "该用户连接不存在");
+            return false;
         }
         channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(message)));
+        return true;
     }
 
     /**

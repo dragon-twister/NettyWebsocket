@@ -1,4 +1,4 @@
-package com.coocaa.websocket.common.config;
+package com.coocaa.websocket.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

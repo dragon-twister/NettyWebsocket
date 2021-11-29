@@ -1,6 +1,6 @@
 package com.coocaa.websocket.api.config;
 
-import com.coocaa.websocket.common.util.R;
+import com.coocaa.websocket.api.util.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;

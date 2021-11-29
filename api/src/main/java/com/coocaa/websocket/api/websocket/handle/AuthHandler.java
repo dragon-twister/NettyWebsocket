@@ -1,6 +1,6 @@
-package com.coocaa.websocket.api.netty.handle;
+package com.coocaa.websocket.api.websocket.handle;
 
-import com.coocaa.websocket.api.netty.UserSseUtil;
+import com.coocaa.websocket.api.websocket.UserSseUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;

@@ -1,4 +1,4 @@
-package com.coocaa.websocket.api.netty;
+package com.coocaa.websocket.api.websocket;
 
 import lombok.ToString;
 

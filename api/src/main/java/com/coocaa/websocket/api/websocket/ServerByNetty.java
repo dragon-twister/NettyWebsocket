@@ -1,8 +1,8 @@
-package com.coocaa.websocket.api.netty;
+package com.coocaa.websocket.api.websocket;
 
-import com.coocaa.websocket.api.netty.handle.AuthHandler;
-import com.coocaa.websocket.api.netty.handle.WebSocketHandle;
-import com.coocaa.websocket.api.netty.handle.WebSocketIndexPageHandler;
+import com.coocaa.websocket.api.websocket.handle.AuthHandler;
+import com.coocaa.websocket.api.websocket.handle.WebSocketHandle;
+import com.coocaa.websocket.api.websocket.handle.WebSocketIndexPageHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -29,7 +29,6 @@ public class ServerByNetty {
     @Value("${miniProgram.websocket.port}")
     Integer port;
     private static final String WEBSOCKET_PATH = "/ws";
-
 
     /**
      * 服务端启动类

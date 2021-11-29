@@ -1,4 +1,4 @@
-package com.coocaa.websocket.common.util;
+package com.coocaa.websocket.api.util;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

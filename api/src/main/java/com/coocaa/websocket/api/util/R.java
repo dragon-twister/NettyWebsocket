@@ -1,24 +1,25 @@
-package com.coocaa.websocket.common.util;
+package com.coocaa.websocket.api.util;
 
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 取代奇葩的R，修复springboot cache无法取到属性的问题
+ * 返回工具类
+ *
  * @author liangshizhu
  */
 @Data
-public class R implements Serializable {
+public class R<T> implements Serializable {
 
-    String code;
-    String msg;
-    Object data;
+    private String code;
+    private String msg;
+    private T data;
 
     public static final String SUCCESS = "success";
     public static final String FAIL = "fail";
 
-    public R(String code, String msg, Object data) {
+    public R(String code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -30,21 +31,25 @@ public class R implements Serializable {
     }
 
     public static R ok() {
-        R r = new R("0",SUCCESS);
+        R r = new R("0", SUCCESS);
         return r;
     }
 
     public static R ok(Object object) {
-        R r = new R("0",SUCCESS,object);
+        R r = new R("0", SUCCESS, object);
         return r;
     }
 
+    public static R fail(Object object) {
+        return new R("-1001", FAIL, object);
+    }
+
     public static R fail(String msg) {
-        return new R("-1001",msg);
+        return new R("-1001", msg);
     }
 
     public static R fail() {
-        return new R("-1001",FAIL);
+        return new R("-1001", FAIL);
     }
 
 }

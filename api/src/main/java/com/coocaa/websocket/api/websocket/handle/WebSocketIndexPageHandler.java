@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.coocaa.websocket.api.netty.handle;
+package com.coocaa.websocket.api.websocket.handle;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;

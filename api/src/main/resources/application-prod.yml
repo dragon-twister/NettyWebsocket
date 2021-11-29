@@ -57,14 +57,6 @@ spring:
         min-idle: 2
         max-wait: -1ms
 
-feign:
-  #是否开启熔断
-  hystrix:
-    enabled: true
-  #使用okhttp
-  okhttp:
-    enabled: true
-
 hystrix:
   # 这样将会自动配置一个 Hystrix 并发策略插件的 hook，这个 hook 会将 SecurityContext 从主线程传输到 Hystrix 的命令。
   # 因为 Hystrix 不允许注册多个 Hystrix 策略，所以可以声明 HystrixConcurrencyStrategy
