@@ -9,10 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Map;
 
+import static com.coocaa.websocket.api.websocket.ServerByNetty.WEBSOCKET_PATH;
 import static io.netty.handler.codec.http.HttpMethod.GET;
+
 /**
- *  1 鉴权 2 用户上线
- * @author  liangshizhu
+ * 1 鉴权 todo
+ * 2 用户上线
+ *
+ * @author liangshizhu
  */
 @Slf4j
 public class AuthHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
@@ -20,29 +24,25 @@ public class AuthHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
         handleHttpRequest(ctx, fullHttpRequest);
-
     }
 
-    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
+    public void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
         String uri = request.uri();
-
-        if (-1 != uri.indexOf("/ws") || request.method() != GET) {
-
+        if (-1 != uri.indexOf(WEBSOCKET_PATH) || request.method() != GET) {
             QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri);
             Map<String, List<String>> parameters = queryStringDecoder.parameters();
 
             if (parameters.size() == 0 || !parameters.containsKey("uid")) {
                 log.error("参数不正确");
-                return;
+                ctx.close();
             }
             String uid = parameters.get("uid").get(0);
+            //todo 确认这里没问题
             UserSseUtil.online(uid, ctx.channel());
-            // 传递到下一个handler：升级握手
-            //重新设置url  不然不会握手
-            request.setUri("/ws");
-            ctx.fireChannelRead(request.retain());
-           // ctx.fireUserEventTriggered();
 
+            // 需要重新设置uri，传递到下一个handler，升级握手。
+            request.setUri(WEBSOCKET_PATH);
+            ctx.fireChannelRead(request.retain());
         } else {
             log.error("not socket");
             ctx.close();

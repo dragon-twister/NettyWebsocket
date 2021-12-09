@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
  */
 @Slf4j
 @Configuration
-public class WebSocketHandle extends SimpleChannelInboundHandler<Object> {
+public class BusinessChannelHandle extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {

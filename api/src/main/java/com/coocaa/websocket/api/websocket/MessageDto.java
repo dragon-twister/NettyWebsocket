@@ -1,11 +1,9 @@
 package com.coocaa.websocket.api.websocket;
 
-import lombok.ToString;
 
 /**
  * 消息体结构
  */
-@ToString
 public class MessageDto {
 
     private String uid;

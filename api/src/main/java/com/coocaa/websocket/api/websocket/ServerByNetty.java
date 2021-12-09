@@ -1,8 +1,7 @@
 package com.coocaa.websocket.api.websocket;
 
 import com.coocaa.websocket.api.websocket.handle.AuthHandler;
-import com.coocaa.websocket.api.websocket.handle.WebSocketHandle;
-import com.coocaa.websocket.api.websocket.handle.WebSocketIndexPageHandler;
+import com.coocaa.websocket.api.websocket.handle.BusinessChannelHandle;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -28,7 +27,7 @@ import java.net.InetSocketAddress;
 public class ServerByNetty {
     @Value("${miniProgram.websocket.port}")
     Integer port;
-    private static final String WEBSOCKET_PATH = "/ws";
+    public static final String WEBSOCKET_PATH = "/ws";
 
     /**
      * 服务端启动类
@@ -54,16 +53,12 @@ public class ServerByNetty {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            //pipeline.addLast(new WebSocketServerProtocolHandler("/ws/mp2tv",null,true,65535));
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(65536));
                             pipeline.addLast(new WebSocketServerCompressionHandler());
                             pipeline.addLast(new AuthHandler());
-                            // 处理路径为 EBSOCKET_PATH 的握手
                             pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-                            //处理非握手失败的情况
-                            pipeline.addLast(new WebSocketIndexPageHandler(WEBSOCKET_PATH));
-                            pipeline.addLast(new WebSocketHandle());
+                            pipeline.addLast(new BusinessChannelHandle());
                         }
                     });
             ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress(port)).sync();
