@@ -1,7 +1,5 @@
 package com.coocaa.websocket.api.websocket;
 
-import com.coocaa.websocket.api.websocket.handle.AuthHandler;
-import com.coocaa.websocket.api.websocket.handle.BusinessChannelHandle;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

@@ -1,8 +1,7 @@
 package com.coocaa.websocket.api.controller;
 
 import com.coocaa.websocket.api.websocket.MessageDto;
-import com.coocaa.websocket.api.websocket.UserSseUtil;
-import com.coocaa.websocket.api.util.R;
+import com.coocaa.websocket.api.util.UserSseUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;

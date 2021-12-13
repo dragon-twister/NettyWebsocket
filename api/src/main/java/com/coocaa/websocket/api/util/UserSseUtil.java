@@ -1,6 +1,7 @@
-package com.coocaa.websocket.api.websocket;
+package com.coocaa.websocket.api.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.coocaa.websocket.api.websocket.MessageDto;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -94,6 +95,7 @@ public class UserSseUtil {
     public static boolean sendMessage(MessageDto message) {
         Channel channel = channelMap.get(message.getTargetId());
         if (null == channel) {
+
             log.error(message.getTargetId() + "该用户连接不存在");
             return false;
         }

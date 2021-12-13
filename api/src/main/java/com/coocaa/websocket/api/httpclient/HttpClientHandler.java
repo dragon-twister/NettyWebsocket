@@ -2,7 +2,7 @@ package com.coocaa.websocket.api.httpclient;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coocaa.websocket.api.websocket.MessageDto;
-import com.coocaa.websocket.api.websocket.UserSseUtil;
+import com.coocaa.websocket.api.util.UserSseUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
@@ -35,16 +35,15 @@ public class HttpClientHandler extends SimpleChannelInboundHandler<HttpObject> {
             HttpContent content = (HttpContent) msg;
             //接收发送消息结果，并告诉客户端
             String jsonString = content.content().toString(CharsetUtil.UTF_8);
-            MessageDto messageDtoR = JSONObject.parseObject(jsonString, MessageDto.class);
-            if (messageDtoR != null) {
-                String uid = messageDtoR.getUid();
+            MessageDto messageDto = JSONObject.parseObject(jsonString, MessageDto.class);
+            if (messageDto != null) {
+                String uid = messageDto.getUid();
                 if (uid != null) {
-                    UserSseUtil.sendMessage(messageDtoR);
+                    UserSseUtil.sendMessage(messageDto);
                 }
             }
             System.err.print(content.content().toString(CharsetUtil.UTF_8));
             System.err.flush();
-
             if (content instanceof LastHttpContent) {
                 System.err.println("} END OF CONTENT");
                 ctx.close();
