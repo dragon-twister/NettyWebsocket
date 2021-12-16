@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Map;
 
-import static com.coocaa.websocket.api.websocket.ServerByNetty.WEBSOCKET_PATH;
+import static com.coocaa.websocket.api.websocket.WebsocketServer.WEBSOCKET_PATH;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 
 /**
@@ -19,7 +19,7 @@ import static io.netty.handler.codec.http.HttpMethod.GET;
  * @author liangshizhu
  */
 @Slf4j
-public class AuthHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HttpRequestHandle extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest) throws Exception {
@@ -37,7 +37,6 @@ public class AuthHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 ctx.close();
             }
             String uid = parameters.get("uid").get(0);
-            //todo 确认这里没问题
             UserSseUtil.online(uid, ctx.channel());
 
             // 需要重新设置uri，传递到下一个handler，升级握手。

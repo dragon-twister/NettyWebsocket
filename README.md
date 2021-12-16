@@ -16,7 +16,7 @@
 ## 接口
 
     使用http接口向目标发送消息
-    ws://localhost:8005?uid=1
+    ws://localhost:8001?uid=1
     报文： 
     {
         "uid":"aaa",
@@ -27,7 +27,7 @@
     }
     
     使用websocket向目标发送消息：
-    http://localhost:8003/sendToClient?uid=1
+    http://localhost:8002/sendToClient?uid=1
     报文： 
     {
         "uid":"aaa",

@@ -13,18 +13,21 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 
 /**
- * websocket的服务端代码 目前不支持ssl
+ * websocket的服务端代码
  *
  * @Auth liangshizhu
  */
-@Configuration
-public class ServerByNetty {
-    @Value("${miniProgram.websocket.port}")
-    Integer port;
+@Component
+public class WebsocketServer {
+    @Value("${project.websocket.port}")
+    Integer wsPort;
+
     public static final String WEBSOCKET_PATH = "/ws";
 
     /**
@@ -32,6 +35,7 @@ public class ServerByNetty {
      *
      * @throws Exception
      */
+    @Async
     public void startServer() throws Exception {
         // netty基本操作，两个线程组，一个负责连接，一个负责io
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -54,12 +58,12 @@ public class ServerByNetty {
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(65536));
                             pipeline.addLast(new WebSocketServerCompressionHandler());
-                            pipeline.addLast(new AuthHandler());
+                            pipeline.addLast(new HttpRequestHandle());
                             pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH, null, true));
-                            pipeline.addLast(new BusinessChannelHandle());
+                            pipeline.addLast(new WebsocketMsgHandle());
                         }
                     });
-            ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress(port)).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(new InetSocketAddress(wsPort)).sync();
             channelFuture.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();

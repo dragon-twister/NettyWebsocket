@@ -20,46 +20,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <mysql.version>5.1.47</mysql.version>
-        <oracle.version>11.2.0.3</oracle.version>
-        <druid.version>1.2.1</druid.version>
-        <quartz.version>2.3.0</quartz.version>
-        <commons.lang.version>2.6</commons.lang.version>
-        <commons.fileupload.version>1.2.2</commons.fileupload.version>
-        <commons.codec.version>1.10</commons.codec.version>
         <commons.configuration.version>1.10</commons.configuration.version>
         <commons-lang3.version>3.7</commons-lang3.version>
-        <swagger.version>2.6.1</swagger.version>
-        <commons-net.version>1.4.1</commons-net.version>
         <lombok.version>1.16.20</lombok.version>
-        <log4j.version>2.9.0</log4j.version>
-        <commons.csv.version>1.5</commons.csv.version>
         <fastjson.version>1.2.44</fastjson.version>
-        <mybatis-plus.version>3.4.0</mybatis-plus.version>
-        <hutool-all.version>5.4.3</hutool-all.version>
     </properties>
 
     <dependencies>
-        <!--        <dependency>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                    <version>2.6</version>
-                </dependency>-->
-        <!-- 反射工具 -->
-        <dependency>
-            <groupId>org.db4j</groupId>
-            <artifactId>reflectasm</artifactId>
-            <version>1.11.4-2</version>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -73,109 +44,6 @@
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!--swagger组件-->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-
-        <!-- netflix-hystrix 如果使用hystrix-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>HdrHistogram</artifactId>
-                    <groupId>org.hdrhistogram</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jsr305</artifactId>
-                    <groupId>com.google.code.findbugs</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>5.1.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
-        </dependency>
-        <!-- http请求映射需要 -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <!-- 内置tomcat SpringBoot Jar包运行需要-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
-        <!-- 对JDBC数据库的支持 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-        </dependency>
-
-        <!-- springboot redis依赖-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>${hutool-all.version}</version>
-        </dependency>
-
-
-        <!-- dubbo -->
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <!--<version>${curator-framework.version}</version>-->
-            <version>4.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.zookeeper</groupId>
-                    <artifactId>zookeeper</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <!-- fastjson依赖 -->
         <dependency>
@@ -183,6 +51,7 @@
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
         </dependency>
+
         <!-- 常用工具 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -190,56 +59,7 @@
             <version>${commons-lang3.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>${commons.csv.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--lettuce pool-->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>${commons-net.version}</version>
-        </dependency>
-
-        <!-- commons-pool 这个依赖一定要添加 SpringBoot2.x 默认使用的Redis客户端:lettuce -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
-            <version>3.2.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.9.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
     </dependencies>
-
 
     <build>
         <pluginManagement>

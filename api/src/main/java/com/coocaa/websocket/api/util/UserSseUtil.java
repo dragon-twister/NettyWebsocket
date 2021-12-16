@@ -87,7 +87,6 @@ public class UserSseUtil {
         return channelMap.containsKey(userId) && channelMap.get(userId) != null;
     }
 
-
     /**
      * 给指定用户发内容
      * 后续可以掉这个方法推送消息给客户端
@@ -95,8 +94,8 @@ public class UserSseUtil {
     public static boolean sendMessage(MessageDto message) {
         Channel channel = channelMap.get(message.getTargetId());
         if (null == channel) {
-
             log.error(message.getTargetId() + "该用户连接不存在");
+            message.setData("该用户连接不存在");
             return false;
         }
         channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(message)));

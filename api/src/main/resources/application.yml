@@ -5,40 +5,7 @@ server:
 spring:
   profiles:
     active: @env@
-  autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
-  jackson:
-    time-zone: Asia/Shanghai
-    date-format: yyyy-MM-dd HH:mm:ss
-  servlet:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
-      enabled: true
-  mvc:
-    throw-exception-if-no-handler-found: true
-    static-path-pattern: /static/**
-  #图片虚拟路径
-  #linux服务器上的配置
-  http:
-    multipart:
-      location: /data/log/beta-xw-web-9091
-#      location: C:/Users/Administrator/Desktop/image
-  resources:
-    static-locations: classpath:/META-INF/resources/,classpath:/resources/, classpath:/static/, classpath:/public/, file:${spring.http.multipart.location}/
 
-mybatis-plus:
-  mapper-locations: classpath:/mapper/*Mapper.xml
-  typeAliasesPackage: com.coocaa.pojo
-  config-location: classpath:/mybatis-config.xml
-  global-config:
-    db-config:
-      db-type: mysql
-pagehelper:
-  helper-dialect: mysql
-  reasonable: false
-  support-methods-arguments: true
-  params: countsql
 
 management:
   endpoints:
@@ -52,4 +19,3 @@ management:
 logging:
   level:
     root: info
-    com.coocaa.dao: debug

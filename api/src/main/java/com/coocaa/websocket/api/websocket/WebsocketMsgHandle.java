@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
  */
 @Slf4j
 @Configuration
-public class BusinessChannelHandle extends SimpleChannelInboundHandler<Object> {
+public class WebsocketMsgHandle extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -64,10 +64,7 @@ public class BusinessChannelHandle extends SimpleChannelInboundHandler<Object> {
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        MessageDto messageDto = new MessageDto();
-        messageDto.setUid("server");
-        messageDto.setEvent("exception");
-        messageDto.setData(cause.getMessage());
+        MessageDto messageDto = new MessageDto("server", null, "", "cause.getMessage()", "exception");
         log.error("WEBSOCKET ERROR :", cause);
         TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(Unpooled.buffer().writeBytes(JSONObject.toJSONString(messageDto).getBytes()));
         ctx.channel().writeAndFlush(textWebSocketFrame);

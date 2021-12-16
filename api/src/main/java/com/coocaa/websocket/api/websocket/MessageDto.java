@@ -12,6 +12,32 @@ public class MessageDto {
     private Object data;
     private String event;
 
+    public MessageDto() {
+    }
+
+    public MessageDto(String uid, String targetId, String messageId, Object data, String event) {
+        this.uid = uid;
+        this.targetId = targetId;
+        this.messageId = messageId;
+        this.data = data;
+        this.event = event;
+    }
+
+    public static MessageDto fail(String data) {
+        MessageDto response = new MessageDto("server", "", "", data, "send_result_fail");
+        return response;
+    }
+
+    public static MessageDto fail(String messageId, String data) {
+        MessageDto response = new MessageDto("server", "", "", data, "send_result_fail");
+        return response;
+    }
+
+    public static MessageDto ok() {
+        MessageDto response = new MessageDto("server", "", "", "", "send_result_ok");
+        return response;
+    }
+
     public String getUid() {
         return uid;
     }

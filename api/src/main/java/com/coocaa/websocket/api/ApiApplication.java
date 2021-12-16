@@ -1,22 +1,21 @@
 package com.coocaa.websocket.api;
 
-import com.coocaa.websocket.api.websocket.ServerByNetty;
-import org.mybatis.spring.annotation.MapperScan;
+import com.coocaa.websocket.api.websocket.WebsocketServer;
+import com.coocaa.websocket.api.httpserver.HttpServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-@SpringBootApplication
-@MapperScan({"com.coocaa.websocket.common.dao"})
 @ComponentScan("com.coocaa.websocket")
-@EnableCaching
+@EnableAsync
 public class ApiApplication implements CommandLineRunner {
 
 	@Autowired
-	ServerByNetty serverByNetty;
+    WebsocketServer websocketServer;
+	@Autowired
+	HttpServer httpsServer;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiApplication.class, args);
@@ -24,7 +23,8 @@ public class ApiApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		serverByNetty.startServer();
+		websocketServer.startServer();
+		httpsServer.startServer();
 	}
 
 }
