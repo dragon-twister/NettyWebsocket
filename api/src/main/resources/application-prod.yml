@@ -1,7 +1,24 @@
 project:
   http:
-    port: 8001
+    port: 8008
   sse:
     url: https://localhost:8003/sendToClient
   websocket:
-    port: 8002
+    port: 8009
+
+spring:
+  cache:
+    type: REDIS
+  redis:
+    host: 172.20.154.227
+    port: 7711
+    database: 0
+    password: 6AawynDaP4DY
+    timeout: 1000
+    lettuce:
+      shutdown-timeout: 200ms
+      pool:
+        max-active: 7
+        max-idle: 7
+        min-idle: 2
+        max-wait: 2000ms

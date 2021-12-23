@@ -1,54 +1,28 @@
 package com.coocaa.websocket.api.httpclient;
 
-import com.alibaba.fastjson.JSONObject;
-import com.coocaa.websocket.api.websocket.MessageDto;
-import com.coocaa.websocket.api.util.UserSseUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.Promise;
 
-public class HttpClientHandler extends SimpleChannelInboundHandler<HttpObject> {
+import static com.coocaa.websocket.api.httpclient.HttpClient.RESPONSE_PROMISE_KEY;
+
+/**
+ * 处理服务器返回报文
+ * 有两种情况：
+ * 1.返回给http客户端
+ * 2.返回给websocket客户端
+ *
+ *
+ */
+public class HttpClientHandler extends SimpleChannelInboundHandler<FullHttpMessage> {
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        if (msg instanceof HttpResponse) {
-            HttpResponse response = (HttpResponse) msg;
-            System.err.println("STATUS: " + response.status());
-
-            if (!response.headers().isEmpty()) {
-                for (CharSequence name : response.headers().names()) {
-                    for (CharSequence value : response.headers().getAll(name)) {
-                        System.err.println("HEADER: " + name + " = " + value);
-                    }
-                }
-                System.err.println();
-            }
-
-            if (HttpUtil.isTransferEncodingChunked(response)) {
-                System.err.println("CHUNKED CONTENT {");
-            } else {
-                System.err.println("CONTENT {");
-            }
-        }
-        if (msg instanceof HttpContent) {
-            HttpContent content = (HttpContent) msg;
-            //接收发送消息结果，并告诉客户端
-            String jsonString = content.content().toString(CharsetUtil.UTF_8);
-            MessageDto messageDto = JSONObject.parseObject(jsonString, MessageDto.class);
-            if (messageDto != null) {
-                String uid = messageDto.getUid();
-                if (uid != null) {
-                    UserSseUtil.sendMessage(messageDto);
-                }
-            }
-            System.err.print(content.content().toString(CharsetUtil.UTF_8));
-            System.err.flush();
-            if (content instanceof LastHttpContent) {
-                System.err.println("} END OF CONTENT");
-                ctx.close();
-            }
-        }
+    public void channelRead0(ChannelHandlerContext ctx, FullHttpMessage content) {
+        String jsonString = content.content().toString(CharsetUtil.UTF_8);
+        Promise promise = ctx.channel().attr(RESPONSE_PROMISE_KEY).get();
+        promise.setSuccess(jsonString);
     }
 
     @Override

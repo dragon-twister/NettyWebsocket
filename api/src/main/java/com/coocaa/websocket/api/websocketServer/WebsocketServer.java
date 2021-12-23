@@ -1,4 +1,4 @@
-package com.coocaa.websocket.api.websocket;
+package com.coocaa.websocket.api.websocketServer;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketSe
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 

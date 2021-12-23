@@ -1,7 +1,8 @@
 package com.coocaa.websocket.api.httpclient;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coocaa.websocket.api.websocket.MessageDto;
+import com.coocaa.websocket.api.util.SpringContextUtil;
+import com.coocaa.websocket.api.websocketServer.WsMessageDto;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -10,36 +11,48 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
+import io.netty.util.AttributeKey;
+import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.concurrent.Promise;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * netty http客户端实现有两种方法
+ * 1. 使用 {@link io.netty.util.concurrent.Promise} ，但线程等待阻塞，消耗资源
+ * 2. 消息传递中使用sessionid保存会话，此方法需要通信双方支持
+ */
 public class HttpClient {
 
-    public static Bootstrap b = null;
-    static final String URL = System.getProperty("url", "http://127.0.0.1:8080/");
+    public static Bootstrap b = new Bootstrap();
+    public static final AttributeKey<Promise> RESPONSE_PROMISE_KEY = AttributeKey.valueOf("response_promise");
 
     static {
         // Configure the client.
         EventLoopGroup group = new NioEventLoopGroup();
         try {
-            b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
                     .handler(new HttpClientInitializer());
-            //todo 添加返回处理器，通知消息是否发送成功
         } finally {
             // Shut down executor threads to exit.
             group.shutdownGracefully();
         }
     }
 
-    public static void postJson(MessageDto messageDto) throws InterruptedException, URISyntaxException {
-        String json = JSONObject.toJSONString(messageDto);
-        String url0 = URL + "sendToClient?uid=" + messageDto.getUid();
-
-        URI uri = new URI(url0);
+    /**
+     * 通用 http post json方法
+     * @param url
+     * @param json
+     * @param listener
+     * @throws InterruptedException
+     * @throws URISyntaxException
+     */
+    public static void postJson(String url, String json, GenericFutureListener listener) throws InterruptedException, URISyntaxException {
+        URI uri = new URI("http://" + url);
         Channel ch = b.connect(uri.getHost(), uri.getPort()).sync().channel();
 
         // Prepare the HTTP request.
@@ -52,14 +65,38 @@ public class HttpClient {
         request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/json");
         ByteBuf bbuf = Unpooled.copiedBuffer(json, StandardCharsets.UTF_8);
         request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
-
         request.content().clear().writeBytes(bbuf);
 
-        // Send the HTTP request.
-        ch.writeAndFlush(request);
+        //设置promise和监听器
+        Promise<Object> promise = b.config().group().next().newPromise();
+        ch.attr(RESPONSE_PROMISE_KEY).set(promise.addListener(listener));
 
-        // Wait for the server to close the connection.
+        //发送请求
+        ch.writeAndFlush(request);
         ch.closeFuture().sync();
+    }
+
+    /**
+     * 找到用户所连接的服务器，发送消息
+     * @param wsMessageDto
+     * @param listener
+     */
+    public static void postToClient(WsMessageDto wsMessageDto, GenericFutureListener listener) {
+        String json = JSONObject.toJSONString(wsMessageDto);
+        //从redis获取，如果获取不到就返回错误
+        RedisTemplate redisTemplate = (RedisTemplate) SpringContextUtil.getBean("redisTemplate");
+        Object o = redisTemplate.opsForValue().get("UserServer-" + wsMessageDto.getUid());
+        if (o == null) {
+            throw new RuntimeException();
+        }
+        String url0 = o + "/sendToLocalClient";
+        try {
+            postJson(url0, json, listener);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
 }

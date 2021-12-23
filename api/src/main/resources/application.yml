@@ -1,11 +1,8 @@
-server:
-  tomcat:
-    uri-encoding: UTF-8
-  port: 8003
 spring:
+  application:
+    name: websocket
   profiles:
     active: @env@
-
 
 management:
   endpoints:
@@ -19,3 +16,24 @@ management:
 logging:
   level:
     root: info
+
+nacos:
+  discovery:
+    server-addr: 127.0.0.1:8848
+    auto-register: true
+#  config:
+#    server-addr: 172.20.155.51:8848
+#    type: yaml
+#    namespace: a0d55d54-7e54-4325-b730-d38f41715d6a
+#    data-id: tvpi_api
+#    group: COOCAA_TVPI
+#    auto-refresh: true
+#    bootstrap:
+#      enable: true
+#      log:
+#        enable: true
+#  discovery:
+#    server-addr: 172.20.155.51:8848
+#    namespace: a0d55d54-7e54-4325-b730-d38f41715d6a
+#    data-id: tvpi_api
+#    group: COOCAA_TVPI

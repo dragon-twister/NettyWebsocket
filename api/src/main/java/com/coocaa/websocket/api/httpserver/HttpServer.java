@@ -48,7 +48,7 @@ public class HttpServer {
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(new HttpServerCodec());
                             p.addLast(new HttpObjectAggregator(65535));
-                            p.addLast(new BusinessHandler());
+                            p.addLast(new HttpServerHandler());
                         }
                     });
             Channel ch = b.bind(httpPort).sync().channel();

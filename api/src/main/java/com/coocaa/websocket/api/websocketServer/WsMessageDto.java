@@ -1,10 +1,12 @@
-package com.coocaa.websocket.api.websocket;
+package com.coocaa.websocket.api.websocketServer;
 
+
+import java.io.Serializable;
 
 /**
  * 消息体结构
  */
-public class MessageDto {
+public class WsMessageDto implements Serializable {
 
     private String uid;
     private String targetId;
@@ -12,10 +14,10 @@ public class MessageDto {
     private Object data;
     private String event;
 
-    public MessageDto() {
+    public WsMessageDto() {
     }
 
-    public MessageDto(String uid, String targetId, String messageId, Object data, String event) {
+    public WsMessageDto(String uid, String targetId, String messageId, Object data, String event) {
         this.uid = uid;
         this.targetId = targetId;
         this.messageId = messageId;
@@ -23,18 +25,18 @@ public class MessageDto {
         this.event = event;
     }
 
-    public static MessageDto fail(String data) {
-        MessageDto response = new MessageDto("server", "", "", data, "send_result_fail");
+    public static WsMessageDto fail(String data) {
+        WsMessageDto response = new WsMessageDto("server", "", "", data, "send_result_fail");
         return response;
     }
 
-    public static MessageDto fail(String messageId, String data) {
-        MessageDto response = new MessageDto("server", "", "", data, "send_result_fail");
+    public static WsMessageDto fail(String messageId, String data) {
+        WsMessageDto response = new WsMessageDto("server", "", "", data, "send_result_fail");
         return response;
     }
 
-    public static MessageDto ok() {
-        MessageDto response = new MessageDto("server", "", "", "", "send_result_ok");
+    public static WsMessageDto ok(String messageId) {
+        WsMessageDto response = new WsMessageDto("server", "", messageId, "", "send_result_ok");
         return response;
     }
 

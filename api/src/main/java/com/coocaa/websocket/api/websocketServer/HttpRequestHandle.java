@@ -1,6 +1,6 @@
-package com.coocaa.websocket.api.websocket;
+package com.coocaa.websocket.api.websocketServer;
 
-import com.coocaa.websocket.api.util.UserSseUtil;
+import com.coocaa.websocket.api.util.WebsocketSessionUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Map;
 
-import static com.coocaa.websocket.api.websocket.WebsocketServer.WEBSOCKET_PATH;
+import static com.coocaa.websocket.api.websocketServer.WebsocketServer.WEBSOCKET_PATH;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 
 /**
@@ -37,7 +37,9 @@ public class HttpRequestHandle extends SimpleChannelInboundHandler<FullHttpReque
                 ctx.close();
             }
             String uid = parameters.get("uid").get(0);
-            UserSseUtil.online(uid, ctx.channel());
+
+            //上线操作：保存用户channel、服务器地址
+            WebsocketSessionUtil.online(uid, ctx.channel());
 
             // 需要重新设置uri，传递到下一个handler，升级握手。
             request.setUri(WEBSOCKET_PATH);

@@ -1,30 +1,32 @@
 package com.coocaa.websocket.api;
 
-import com.coocaa.websocket.api.websocket.WebsocketServer;
+import com.coocaa.websocket.api.websocketServer.WebsocketServer;
 import com.coocaa.websocket.api.httpserver.HttpServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@ComponentScan("com.coocaa.websocket")
 @EnableAsync
+@EnableCaching
+@SpringBootApplication(scanBasePackages ="com.coocaa.websocket")
 public class ApiApplication implements CommandLineRunner {
 
-	@Autowired
+    @Autowired
     WebsocketServer websocketServer;
-	@Autowired
-	HttpServer httpsServer;
+    @Autowired
+    HttpServer httpsServer;
 
-	public static void main(String[] args) {
-		SpringApplication.run(ApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ApiApplication.class, args);
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		websocketServer.startServer();
-		httpsServer.startServer();
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        websocketServer.startServer();
+        httpsServer.startServer();
+    }
 
 }

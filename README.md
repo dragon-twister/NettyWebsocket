@@ -1,6 +1,6 @@
 # WebSocket项目
 
-##背景
+## 背景
 
 此项目基于Netty、Websocket实现IM通信。
 

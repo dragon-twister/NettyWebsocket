@@ -1,7 +1,7 @@
 package com.coocaa.websocket.api.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coocaa.websocket.api.websocket.MessageDto;
+import com.coocaa.websocket.api.websocketServer.WsMessageDto;
 import io.netty.channel.Channel;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -9,6 +9,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 @Slf4j
-public class UserSseUtil {
+public class WebsocketSessionUtil {
+
     //用户id=>channel
     private final static ConcurrentHashMap<String, Channel> channelMap = new ConcurrentHashMap<>();
     public static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -33,7 +36,7 @@ public class UserSseUtil {
      * @param channel
      * @return
      */
-    public boolean hasUser(Channel channel) {
+    public static boolean hasUser(Channel channel) {
         AttributeKey<String> key = AttributeKey.valueOf("uid");
         //netty移除了这个map的remove方法,这里的判断谨慎一点
         return (channel.hasAttr(key) || channel.attr(key).get() != null);
@@ -46,13 +49,14 @@ public class UserSseUtil {
      * @param userId
      */
     public static void online(String userId, Channel channel) {
-        //todo redis token 认证?
         channel.attr(uid).set(userId);
-
         channelMap.put(userId, channel);
         channelGroup.add(channel);
-        log.info("{}：上线", channel.attr(uid).get());
-
+        RedisTemplate redisTemplate = (RedisTemplate) SpringContextUtil.getBean("redisTemplate");
+        Environment environment = (Environment) SpringContextUtil.getBean("environment");
+        String url = IpUtil.getIp() + ":" + environment.getProperty("project.http.port");
+        redisTemplate.opsForValue().set("UserServer-" + userId, url);
+        log.info("{}：上线，{}", channel.attr(uid).get(),url);
     }
 
     public static void offline(Channel channel) {
@@ -91,7 +95,7 @@ public class UserSseUtil {
      * 给指定用户发内容
      * 后续可以掉这个方法推送消息给客户端
      */
-    public static boolean sendMessage(MessageDto message) {
+    public static boolean sendMessage(WsMessageDto message) {
         Channel channel = channelMap.get(message.getTargetId());
         if (null == channel) {
             log.error(message.getTargetId() + "该用户连接不存在");
