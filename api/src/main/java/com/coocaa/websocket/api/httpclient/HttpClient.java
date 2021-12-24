@@ -21,11 +21,11 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * netty http客户端实现有两种方法
+ * netty http客户端实现有两种方法,此处采用第一种方案
  * 1. 使用 {@link io.netty.util.concurrent.Promise} ，但线程等待阻塞，消耗资源
  * 2. 消息传递中使用sessionid保存会话，此方法需要通信双方支持
  */
-public class HttpClient {
+public class HttpClient implements AutoCloseable {
 
     public static Bootstrap b = new Bootstrap();
     public static final AttributeKey<Promise> RESPONSE_PROMISE_KEY = AttributeKey.valueOf("response_promise");
@@ -33,18 +33,14 @@ public class HttpClient {
     static {
         // Configure the client.
         EventLoopGroup group = new NioEventLoopGroup();
-        try {
-            b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new HttpClientInitializer());
-        } finally {
-            // Shut down executor threads to exit.
-            group.shutdownGracefully();
-        }
+        b.group(group)
+                .channel(NioSocketChannel.class)
+                .handler(new HttpClientInitializer());
     }
 
     /**
      * 通用 http post json方法
+     *
      * @param url
      * @param json
      * @param listener
@@ -52,6 +48,8 @@ public class HttpClient {
      * @throws URISyntaxException
      */
     public static void postJson(String url, String json, GenericFutureListener listener) throws InterruptedException, URISyntaxException {
+        // Configure the client.
+        EventLoopGroup group = new NioEventLoopGroup();
         URI uri = new URI("http://" + url);
         Channel ch = b.connect(uri.getHost(), uri.getPort()).sync().channel();
 
@@ -70,14 +68,13 @@ public class HttpClient {
         //设置promise和监听器
         Promise<Object> promise = b.config().group().next().newPromise();
         ch.attr(RESPONSE_PROMISE_KEY).set(promise.addListener(listener));
-
         //发送请求
         ch.writeAndFlush(request);
-        ch.closeFuture().sync();
     }
 
     /**
      * 找到用户所连接的服务器，发送消息
+     *
      * @param wsMessageDto
      * @param listener
      */
@@ -97,6 +94,11 @@ public class HttpClient {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        b.config().group().shutdownGracefully().sync();
     }
 
 }

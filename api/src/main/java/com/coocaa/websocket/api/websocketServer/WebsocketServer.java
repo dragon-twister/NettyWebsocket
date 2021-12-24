@@ -45,14 +45,12 @@ public class WebsocketServer {
             //池子内指定channel类型
             serverBootstrap.group(bossGroup, wokerGroup).channel(NioServerSocketChannel.class)
                     //记录日志的handler，netty自带的
-                    .handler(new LoggingHandler(LogLevel.INFO))
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .option(ChannelOption.SO_BACKLOG, 1024 * 1024 * 10)
                     //设置handler
-                    //没有key的handle会自动生成key
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        protected void initChannel(SocketChannel socketChannel) {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new HttpServerCodec());
                             pipeline.addLast(new HttpObjectAggregator(65536));
@@ -70,4 +68,6 @@ public class WebsocketServer {
         }
 
     }
+
+
 }

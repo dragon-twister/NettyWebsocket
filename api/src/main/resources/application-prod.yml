@@ -1,10 +1,8 @@
 project:
-  http:
-    port: 8008
-  sse:
-    url: https://localhost:8003/sendToClient
   websocket:
-    port: 8009
+    port: 8001
+  http:
+    port: 8002
 
 spring:
   cache:
@@ -21,4 +19,4 @@ spring:
         max-active: 7
         max-idle: 7
         min-idle: 2
-        max-wait: 2000ms
+        max-wait: -1ms

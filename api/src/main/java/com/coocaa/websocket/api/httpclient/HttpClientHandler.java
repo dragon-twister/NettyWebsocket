@@ -13,8 +13,6 @@ import static com.coocaa.websocket.api.httpclient.HttpClient.RESPONSE_PROMISE_KE
  * 有两种情况：
  * 1.返回给http客户端
  * 2.返回给websocket客户端
- *
- *
  */
 public class HttpClientHandler extends SimpleChannelInboundHandler<FullHttpMessage> {
 
@@ -23,6 +21,7 @@ public class HttpClientHandler extends SimpleChannelInboundHandler<FullHttpMessa
         String jsonString = content.content().toString(CharsetUtil.UTF_8);
         Promise promise = ctx.channel().attr(RESPONSE_PROMISE_KEY).get();
         promise.setSuccess(jsonString);
+        ctx.close();
     }
 
     @Override

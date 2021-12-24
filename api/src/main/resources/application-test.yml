@@ -1,10 +1,8 @@
 project:
-  http:
-    port: 8008
-  sse:
-    url: https://localhost:8003/sendToClient
   websocket:
-    port: 8009
+    port: 8001
+  http:
+    port: 8002
 
 spring:
   cache:
@@ -15,10 +13,10 @@ spring:
     database: 0
     password: 6AawynDaP4DY
     timeout: 1000
-#    lettuce:
-#      shutdown-timeout: 200ms
-#      pool:
-#        max-active: 7
-#        max-idle: 7
-#        min-idle: 2
-#        max-wait: -1ms
+    lettuce:
+      shutdown-timeout: 200ms
+      pool:
+        max-active: 7
+        max-idle: 7
+        min-idle: 2
+        max-wait: -1ms

@@ -52,7 +52,6 @@ public class WebsocketMsgHandle extends SimpleChannelInboundHandler<Object> {
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        log.info("客户端关闭");
         WebsocketSessionUtil.offline(ctx.channel());
     }
 
@@ -73,10 +72,6 @@ public class WebsocketMsgHandle extends SimpleChannelInboundHandler<Object> {
     }
 
     private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-        if (frame instanceof PingWebSocketFrame) {
-            //ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
-            return;
-        }
         if (frame instanceof TextWebSocketFrame) {
             String jsonStr = ((TextWebSocketFrame) frame).text();
             WsMessageDto req = JSONObject.parseObject(jsonStr, WsMessageDto.class);
