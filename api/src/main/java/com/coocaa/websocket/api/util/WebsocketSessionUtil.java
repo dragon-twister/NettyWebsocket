@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +43,8 @@ public class WebsocketSessionUtil {
 
     /**
      * 上线一个用户
+     * 1. 记录用户的channel到channelMap
+     * 2. 记录用户所连接服务器到redis
      *
      * @param channel
      * @param userId
@@ -53,22 +54,30 @@ public class WebsocketSessionUtil {
         channelMap.put(userId, channel);
         channelGroup.add(channel);
         RedisTemplate redisTemplate = (RedisTemplate) SpringContextUtil.getBean("redisTemplate");
-        Environment environment = (Environment) SpringContextUtil.getBean("environment");
-        String url = IpUtil.getIp() + ":" + environment.getProperty("project.http.port");
-        redisTemplate.opsForValue().set("UserServer-" + userId, url);
-        log.info("{}：上线，{}", channel.attr(uid).get(),url);
+        redisTemplate.opsForValue().set("UserServer-" + userId, IpUtil.LOCAL_HTTP_URL);
+        log.info("{}：上线，{}", channel.attr(uid).get(), IpUtil.LOCAL_HTTP_URL);
     }
 
+    /**
+     * 下线
+     * 1. 从redis删除用户的连接信息
+     * 2. 从channelMap中删除用户channel
+     *
+     * @param channel
+     */
     public static void offline(Channel channel) {
         Object a = channel.attr(uid).get();
         if (null == a) {
             log.error("下线失败，uid为空");
             return;
         }
+        String uid = a.toString();
+        RedisTemplate redisTemplate = (RedisTemplate) SpringContextUtil.getBean("redisTemplate");
+        redisTemplate.delete("uid");
+
         channelMap.remove(a.toString());
         channelGroup.remove(channel);
-        log.info("{}：下线", channel.attr(uid).get());
-
+        log.info("{}：下线", uid);
     }
 
     /**
@@ -95,15 +104,19 @@ public class WebsocketSessionUtil {
      * 给指定用户发内容
      * 后续可以掉这个方法推送消息给客户端
      */
-    public static boolean sendMessage(WsMessageDto message) {
+    public static WsMessageDto sendMessage(WsMessageDto message) {
         Channel channel = channelMap.get(message.getTargetId());
         if (null == channel) {
             log.error(message.getTargetId() + "该用户连接不存在");
+            message.setUid("server");
             message.setData("该用户连接不存在");
-            return false;
+            message.setEvent("send_result_fail");
+            return message;
         }
         channel.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(message)));
-        return true;
+        message.setUid("server");
+        message.setEvent("send_result_ok");
+        return message;
     }
 
     /**

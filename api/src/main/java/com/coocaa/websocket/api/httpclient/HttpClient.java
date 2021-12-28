@@ -1,8 +1,5 @@
 package com.coocaa.websocket.api.httpclient;
 
-import com.alibaba.fastjson.JSONObject;
-import com.coocaa.websocket.api.util.SpringContextUtil;
-import com.coocaa.websocket.api.websocketServer.WsMessageDto;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -14,7 +11,6 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,30 +66,6 @@ public class HttpClient implements AutoCloseable {
         ch.attr(RESPONSE_PROMISE_KEY).set(promise.addListener(listener));
         //发送请求
         ch.writeAndFlush(request);
-    }
-
-    /**
-     * 找到用户所连接的服务器，发送消息
-     *
-     * @param wsMessageDto
-     * @param listener
-     */
-    public static void postToClient(WsMessageDto wsMessageDto, GenericFutureListener listener) {
-        String json = JSONObject.toJSONString(wsMessageDto);
-        //从redis获取，如果获取不到就返回错误
-        RedisTemplate redisTemplate = (RedisTemplate) SpringContextUtil.getBean("redisTemplate");
-        Object o = redisTemplate.opsForValue().get("UserServer-" + wsMessageDto.getUid());
-        if (o == null) {
-            throw new RuntimeException();
-        }
-        String url0 = o + "/sendToLocalClient";
-        try {
-            postJson(url0, json, listener);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

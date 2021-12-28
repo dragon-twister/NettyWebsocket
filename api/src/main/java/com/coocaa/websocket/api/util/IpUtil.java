@@ -1,5 +1,7 @@
 package com.coocaa.websocket.api.util;
 
+import org.springframework.core.env.Environment;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -7,6 +9,12 @@ import java.util.Enumeration;
 
 public class IpUtil {
 
+    public static String LOCAL_HTTP_URL = "";
+
+    static {
+        Environment environment = (Environment) SpringContextUtil.getBean("environment");
+        LOCAL_HTTP_URL = IpUtil.getIp() + ":" + environment.getProperty("project.http.port");
+    }
     /**
      *
      * @return 优先返回外网IP

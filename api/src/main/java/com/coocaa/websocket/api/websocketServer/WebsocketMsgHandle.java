@@ -1,35 +1,50 @@
 package com.coocaa.websocket.api.websocketServer;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coocaa.websocket.api.httpclient.HttpClient;
-import com.coocaa.websocket.api.util.WebsocketSessionUtil;
+import com.coocaa.websocket.api.util.*;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.*;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-
-import java.net.URISyntaxException;
 
 /**
  * 自定义的handler类，只适合sendToClient接口
  */
 @Slf4j
 @Configuration
-public class WebsocketMsgHandle extends SimpleChannelInboundHandler<Object> {
+public class WebsocketMsgHandle extends SimpleChannelInboundHandler<Object> implements ResponseUtil {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws URISyntaxException, InterruptedException {
-        if (msg instanceof WebSocketFrame) {
-            handleWebSocketFrame(ctx, (WebSocketFrame) msg);
+    protected void channelRead0(ChannelHandlerContext ctx, Object frame) {
+        if (frame instanceof TextWebSocketFrame) {
+            String reqString = ((TextWebSocketFrame) frame).text();
+            if ("ping".equals(reqString)) {
+                return;
+            }
+            WsMessageDto requestWsMessageDto = JSONObject.parseObject(reqString, WsMessageDto.class);
+            //判断事件
+            String event = requestWsMessageDto.getEvent();
+            switch (event) {
+                case "sendToTarget":
+                default:
+                    MessageUtil.sendToRemoteClient(ctx, requestWsMessageDto, this);
+                    break;
+            }
+        }
+        //关闭消息
+        if (frame instanceof CloseWebSocketFrame) {
+            log.info("客户端关闭，通道关闭");
+            Channel channel = ctx.channel();
+            channel.close();
         }
     }
 
@@ -71,32 +86,26 @@ public class WebsocketMsgHandle extends SimpleChannelInboundHandler<Object> {
         ctx.close();
     }
 
-    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-        if (frame instanceof TextWebSocketFrame) {
-            String jsonStr = ((TextWebSocketFrame) frame).text();
-            WsMessageDto req = JSONObject.parseObject(jsonStr, WsMessageDto.class);
-            //判断事件
-            String event = req.getEvent();
-            switch (event) {
-                case "ping":
-                    return;
-                default:
-                    HttpClient.postToClient(req, new GenericFutureListener() {
-                        @Override
-                        public void operationComplete(Future future) throws Exception {
-                            String o1 = (String) future.get();
-                            ctx.channel().writeAndFlush(o1.getBytes());
-                        }
-                    });
-                    break;
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            if (state == IdleState.READER_IDLE) {
+                // 在规定时间内没有收到客户端的上行数据, 主动断开连接
+                log.info("{}超时，断开连接", ctx.channel().id());
+                ctx.close();
             }
-        }
-        //关闭消息
-        if (frame instanceof CloseWebSocketFrame) {
-            log.info("客户端关闭，通道关闭");
-            Channel channel = ctx.channel();
-            channel.close();
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
     }
 
+    @Override
+    public void response(ChannelHandlerContext ctx, Object result) {
+        if (result instanceof String) {
+            ctx.channel().writeAndFlush(result);
+        } else {
+            ctx.channel().writeAndFlush(JSONObject.toJSONString(result));
+        }
+    }
 }

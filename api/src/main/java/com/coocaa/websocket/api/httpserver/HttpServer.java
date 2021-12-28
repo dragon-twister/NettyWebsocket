@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HttpServer {
+
     @Value("${project.http.port}")
     Integer httpPort;
 
@@ -48,7 +49,7 @@ public class HttpServer {
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(new HttpServerCodec());
                             p.addLast(new HttpObjectAggregator(65535));
-                            p.addLast(new HttpServerHandler());
+                            p.addLast(new HttpMsgDispatchHandler());
                         }
                     });
             Channel ch = b.bind(httpPort).sync().channel();
