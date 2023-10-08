@@ -24,6 +24,7 @@
         <commons-lang3.version>3.7</commons-lang3.version>
         <lombok.version>1.16.20</lombok.version>
         <fastjson.version>1.2.44</fastjson.version>
+        <netty.version>4.1.99.Final</netty.version>
     </properties>
 
     <dependencies>
@@ -40,6 +41,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>netty-handler</artifactId>
+                    <groupId>io.netty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>netty-transport</artifactId>
+                    <groupId>io.netty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>netty-common</artifactId>
+                    <groupId>io.netty</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- lettuce pool 缓存连接池-->
         <dependency>
